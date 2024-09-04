@@ -40,13 +40,15 @@ struct Spawner {
 }
 
 impl Spawner {
-  fn spawn(&self, future: impl Future<Output = ()> + 'static + Send) {
+  fn spawn(&self, future: impl Future<Output=()> + 'static + Send) {
     let future = future.boxed();
     let task = Arc::new(Task {
       future: Mutex::new(Some(future)),
       task_sender: self.task_sender.clone(),
     });
-    self.task_sender.send(task).expect("too many tasks queued");
+    if self.task_sender.send(task).is_err() {
+      println!("too many tasks queued");
+    }
   }
 }
 
@@ -58,10 +60,9 @@ struct Task {
 impl ArcWake for Task {
   fn wake_by_ref(arc_self: &Arc<Self>) {
     let cloned = arc_self.clone();
-    arc_self
-      .task_sender
-      .send(cloned)
-      .expect("too many tasks queued");
+    if arc_self.task_sender.send(cloned).is_err() {
+      println!("too many tasks queued");
+    }
   }
 }
 
@@ -75,15 +76,15 @@ fn new_executor_and_spawner() -> (Executor, Spawner) {
 fn main() {
   let (executor, spawner) = new_executor_and_spawner();
 
-  spawner.spawn(async {
-    println!("aa");
+  for _ in 0..5000 {
+    spawner.spawn(async {
+      println!("aa");
 
-    for _ in 0..11_000 {
-      TimerFuture::new(Duration::from_micros(200)).await;
-    }
+      TimerFuture::new(Duration::from_secs(2)).await;
 
-    println!("bb");
-  });
+      println!("bb");
+    });
+  }
 
   drop(spawner);
 

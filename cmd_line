@@ -1,0 +1,1 @@
+genhtml -o . 'htmlReport/Run timer Coverage Results.lcov'

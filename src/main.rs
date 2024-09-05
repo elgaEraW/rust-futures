@@ -46,7 +46,8 @@ impl Spawner {
       future: Mutex::new(Some(future)),
       task_sender: self.task_sender.clone(),
     });
-    if self.task_sender.send(task).is_err() {
+    let res = self.task_sender.send(task);
+    if res.is_err() {
       println!("too many tasks queued");
     }
   }
@@ -76,7 +77,7 @@ fn new_executor_and_spawner() -> (Executor, Spawner) {
 fn main() {
   let (executor, spawner) = new_executor_and_spawner();
 
-  for _ in 0..5000 {
+  for _ in 0..5_000 {
     spawner.spawn(async {
       println!("aa");
 

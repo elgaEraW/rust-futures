@@ -1,1 +1,0 @@
-genhtml -o htmlReport 'htmlReport/Run timer Coverage Results.lcov' --ignore-errors range

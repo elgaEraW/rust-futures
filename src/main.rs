@@ -1,5 +1,3 @@
-mod redis;
-
 use std::{
   sync::{
     mpsc::{sync_channel, Receiver, SyncSender},
@@ -42,7 +40,7 @@ struct Spawner {
 }
 
 impl Spawner {
-  fn spawn(&self, future: impl Future<Output=()> + 'static + Send) {
+  fn spawn(&self, future: impl Future<Output = ()> + 'static + Send) {
     let future = future.boxed();
     let task = Arc::new(Task {
       future: Mutex::new(Some(future)),

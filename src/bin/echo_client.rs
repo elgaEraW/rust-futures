@@ -17,7 +17,8 @@ async fn main() -> io::Result<()> {
     wr.write_all(b"hello\r\n").await?;
     wr.write_all(b"world\r\n").await?;
 
-    drop(wr);
+    // Since dropping the wr does not terminate the stream, skipping it
+    // drop(wr);
 
     Ok::<_, io::Error>(())
   });
@@ -25,13 +26,15 @@ async fn main() -> io::Result<()> {
   let mut buf = vec![0; 128];
 
   loop {
+    info!("Waiting to read");
+
     let n = rd.read(&mut buf).await?;
 
     if n == 0 {
       break;
     }
 
-    info!("GOT {:?}", str::from_utf8(&buf[..n]));
+    info!("GOT {:#?}", str::from_utf8(&buf[..n]));
   }
 
   Ok(())

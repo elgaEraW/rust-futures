@@ -1,3 +1,4 @@
+use log::info;
 use simple_logger::SimpleLogger;
 use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpListener;
@@ -15,9 +16,10 @@ async fn main() -> io::Result<()> {
       let mut buf = vec![0; 1024];
 
       loop {
-        match socket.read(&mut buf).await {
+        let size = socket.read(&mut buf).await;
+        info!("Request to write: {:#?}", size);
+        match size {
           Ok(0) => {
-            socket.write_all(&[]).await.unwrap();
             return;
           }
           Ok(n) => {

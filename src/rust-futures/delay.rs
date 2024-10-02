@@ -1,4 +1,4 @@
-use std::{future::Future, task::Poll, time::Duration};
+use std::{future::Future, task::Poll, thread, time::Duration};
 
 use log::info;
 use simple_logger::SimpleLogger;
@@ -12,11 +12,25 @@ impl Future for Delay {
   type Output = &'static str;
 
   fn poll(self: std::pin::Pin<&mut Self>, cx: &mut std::task::Context<'_>) -> Poll<Self::Output> {
+    info!("Polling");
     if Instant::now() >= self.when {
       info!("Done");
       Poll::Ready("done")
     } else {
-      cx.waker().wake_by_ref();
+      let waker = cx.waker().clone();
+      let when = self.when;
+
+      thread::spawn(move || {
+
+        let now = Instant::now();
+
+        if now < when {
+          thread::sleep(when - now);
+        }
+
+        waker.wake();
+      });
+
       Poll::Pending
     }
   }

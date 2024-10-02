@@ -1,3 +1,7 @@
+#[path = "rust-futures/mod.rs"]
+mod rust_futures;
+
+use rust_futures::timer::TimerFuture;
 use std::{
   sync::{
     mpsc::{sync_channel, Receiver, SyncSender},
@@ -12,7 +16,6 @@ use futures::{
   task::{waker_ref, ArcWake},
   Future, FutureExt,
 };
-use timer::TimerFuture;
 
 struct Executor {
   ready_queue: Receiver<Arc<Task>>,

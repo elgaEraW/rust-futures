@@ -41,7 +41,7 @@ fn main() {
     async fn complete_with_delay(time: u64) {
         let when = Instant::now() + Duration::from_secs(time);
 
-        let future = Delay { when };
+        let future = Delay { when, waker: None };
 
         let out = future.await;
         info!("Completed: {:#?}", out);

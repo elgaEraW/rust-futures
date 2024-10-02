@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use std::task::Waker;
 use log::info;
 use simple_logger::SimpleLogger;
-use tokio::time::Instant;
+use std::time::Instant;
 
 pub struct Delay {
   pub when: Instant,

@@ -7,7 +7,7 @@ use simple_logger::SimpleLogger;
 use std::future::Future;
 use std::sync::{mpsc, Arc};
 use std::time::Duration;
-use tokio::time::Instant;
+use std::time::Instant;
 
 struct MiniTokio {  
     scheduled: mpsc::Receiver<Arc<Task>>,
